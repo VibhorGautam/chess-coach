@@ -48,7 +48,6 @@ export default function GrowthCard({ recommendation, userRating }: GrowthCardPro
       </div>
 
       <div className="flex items-start gap-4 mb-4">
-        {/* User's likely move */}
         <div className="flex flex-col items-center">
           <span className="text-[10px] text-gray-500 mb-1">You&apos;d play</span>
           <span className="text-xl font-mono text-gray-400 line-through">
@@ -61,7 +60,6 @@ export default function GrowthCard({ recommendation, userRating }: GrowthCardPro
           )}
         </div>
 
-        {/* Arrow */}
         <div className="flex items-center pt-5">
           <svg width="40" height="20" viewBox="0 0 40 20" className="text-pink-400">
             <path
@@ -73,7 +71,6 @@ export default function GrowthCard({ recommendation, userRating }: GrowthCardPro
           </svg>
         </div>
 
-        {/* Growth move */}
         <div className="flex flex-col items-center">
           <span className="text-[10px] text-pink-400 mb-1">Try instead</span>
           <span className="text-3xl font-mono font-bold text-pink-300">
@@ -85,7 +82,6 @@ export default function GrowthCard({ recommendation, userRating }: GrowthCardPro
         </div>
       </div>
 
-      {/* Explanation */}
       <div className="space-y-2">
         <p className="text-sm text-gray-300">{explanation}</p>
 
@@ -108,9 +104,7 @@ export default function GrowthCard({ recommendation, userRating }: GrowthCardPro
           <span>|</span>
           <span>+{cpImprovement}cp improvement</span>
           <span>|</span>
-          <span>
-            Move rated for ~{userRating + 200} player
-          </span>
+          <span>Move rated for ~{userRating + 200} player</span>
         </div>
       </div>
     </div>

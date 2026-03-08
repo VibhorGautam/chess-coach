@@ -1,24 +1,9 @@
-/**
- * Chess Move Coach - Constants
- *
- * Rating band definitions, engine defaults, UI thresholds,
- * and all magic numbers in one place.
- */
-
 import type { RatingProfile } from "./types";
-
-// ---------------------------------------------------------------------------
-// Engine Defaults
-// ---------------------------------------------------------------------------
 
 export const DEFAULT_DEPTH = 18;
 export const DEFAULT_MULTI_PV = 8;
 export const DEFAULT_TIMEOUT_MS = 10_000;
 export const STOCKFISH_WASM_PATH = "/stockfish/stockfish.wasm";
-
-// ---------------------------------------------------------------------------
-// Rating Configuration
-// ---------------------------------------------------------------------------
 
 export const MIN_RATING = 500;
 export const MAX_RATING = 2000;
@@ -26,16 +11,8 @@ export const RATING_STEP = 100;
 export const GROWTH_FACTOR = 1.3;
 export const MAX_TARGET_RATING = 2200;
 
-/**
- * Rating band profiles. Each band defines the statistical behavior
- * of a player at that level when selecting moves.
- *
- * Temperature controls the softmax sharpness:
- *   - High temperature = more random selection (weaker players)
- *   - Low temperature = sharper selection toward best moves (stronger players)
- *
- * Bonus/penalty weights are additive modifiers to the softmax probability.
- */
+// Temperature controls how "random" move selection is at each level.
+// High = more random (weaker), low = sharper toward best moves (stronger).
 export const RATING_PROFILES: RatingProfile[] = [
   {
     rating: 500,
@@ -129,43 +106,20 @@ export const RATING_PROFILES: RatingProfile[] = [
   },
 ];
 
-/**
- * The four canonical rating bands shown in the comparison UI.
- */
 export const DISPLAY_RATING_BANDS = [500, 1000, 1500, 2000] as const;
 
-// ---------------------------------------------------------------------------
-// Move Classification Thresholds
-// ---------------------------------------------------------------------------
-
-/** Moves requiring engine depth > this to justify are "complex" */
 export const COMPLEXITY_DEPTH_DIVISOR = 6;
 
-/**
- * Centipawn loss threshold multiplier for "comprehension range".
- * A growth move must have cpLoss < this * avgCpLoss(userRating).
- */
+// Growth move must have cpLoss < this * avgCpLoss at the user's rating
 export const COMPREHENSION_MULTIPLIER = 2.0;
 
-/**
- * Minimum probability ratio (target / user) for a move to qualify
- * as a growth move. Must be noticeably more likely at the target level.
- */
+// Target must be this much more likely to play the growth move than the user
 export const GROWTH_PROBABILITY_RATIO = 1.5;
-
-// ---------------------------------------------------------------------------
-// Explanation Configuration
-// ---------------------------------------------------------------------------
 
 export const EXPLANATION_TIER_BOUNDARIES = {
   beginner: 800,
   intermediate: 1400,
-  // advanced: everything above 1400
 } as const;
-
-// ---------------------------------------------------------------------------
-// UI Constants
-// ---------------------------------------------------------------------------
 
 export const BOARD_SIZE = 560;
 export const ANALYSIS_DEBOUNCE_MS = 300;
@@ -177,8 +131,8 @@ export const ARROW_COLORS = {
 } as const;
 
 export const RATING_BAND_COLORS: Record<number, string> = {
-  500: "#ef4444",  // red
-  1000: "#f97316", // orange
-  1500: "#eab308", // yellow
-  2000: "#22c55e", // green
+  500: "#ef4444",
+  1000: "#f97316",
+  1500: "#eab308",
+  2000: "#22c55e",
 };

@@ -80,7 +80,6 @@ export default function RatingComparison({
 
               <p className="text-xs text-gray-500 italic mt-1">{band.thought}</p>
 
-              {/* Show other candidates */}
               {band.moves.length > 1 && (
                 <div className="flex gap-2 mt-2">
                   {band.moves.slice(1, 3).map((m, i) => (

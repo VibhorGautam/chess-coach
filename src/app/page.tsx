@@ -31,9 +31,6 @@ const ChessBoard = dynamic(() => import("@/components/ChessBoard"), {
 
 type EngineStatus = "not-loaded" | "loading" | "ready" | "analyzing" | "error";
 
-// ---------------------------------------------------------------------------
-// Heuristic fallback evaluator (when WASM isn't available)
-// ---------------------------------------------------------------------------
 function heuristicAnalysis(fen: string): AnalysisResult {
   const start = performance.now();
   const chess = new Chess(fen);
@@ -76,9 +73,6 @@ function heuristicAnalysis(fen: string): AnalysisResult {
   return { fen, moves: scored, bestMove: scored[0]?.uci || "", depth: 8, elapsedMs: performance.now() - start };
 }
 
-// ---------------------------------------------------------------------------
-// How-To Guide Component
-// ---------------------------------------------------------------------------
 function HowToGuide({ onDismiss }: { onDismiss: () => void }) {
   return (
     <div className="rounded-2xl border border-gray-700/50 bg-gradient-to-br from-gray-900/80 to-gray-800/40 p-6 backdrop-blur">
@@ -90,7 +84,6 @@ function HowToGuide({ onDismiss }: { onDismiss: () => void }) {
       </div>
 
       <div className="space-y-4 text-sm">
-        {/* The Problem */}
         <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/30">
           <h3 className="font-semibold text-pink-400 mb-1">The Problem</h3>
           <p className="text-gray-400 leading-relaxed">
@@ -99,7 +92,6 @@ function HowToGuide({ onDismiss }: { onDismiss: () => void }) {
           </p>
         </div>
 
-        {/* The Solution */}
         <div className="p-4 rounded-xl bg-gray-800/50 border border-gray-700/30">
           <h3 className="font-semibold text-green-400 mb-1">The Solution</h3>
           <p className="text-gray-400 leading-relaxed">
@@ -109,7 +101,6 @@ function HowToGuide({ onDismiss }: { onDismiss: () => void }) {
           </p>
         </div>
 
-        {/* Steps */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-500/5 border border-blue-500/10">
             <span className="text-blue-400 font-bold text-lg mt-0.5">1</span>
@@ -134,7 +125,6 @@ function HowToGuide({ onDismiss }: { onDismiss: () => void }) {
           </div>
         </div>
 
-        {/* Powered by */}
         <p className="text-[11px] text-gray-600 text-center pt-1">
           Powered by Stockfish 18 WASM + Boltzmann rating simulation model inspired by MAIA Chess research
         </p>
@@ -143,9 +133,6 @@ function HowToGuide({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main App
-// ---------------------------------------------------------------------------
 export default function Home() {
   const [fen, setFen] = useState(STARTING_FEN);
   const [userRating, setUserRating] = useState(1000);
@@ -162,9 +149,6 @@ export default function Home() {
   const resolveAnalysisRef = useRef<((result: AnalysisResult) => void) | null>(null);
   const analysisStartRef = useRef(0);
 
-  // ---------------------------------------------------------------------------
-  // Initialize Stockfish WASM engine
-  // ---------------------------------------------------------------------------
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -177,22 +161,17 @@ export default function Home() {
         if (msg.type === "uci-output") {
           const line: string = msg.line;
 
-          // Track "uciok" as ready signal
           if (line === "uciok" || line === "readyok") {
             if (engineStatus !== "ready") {
               setEngineStatus("ready");
-              // Configure engine
               worker.postMessage({ type: "command", cmd: "setoption name MultiPV value 8" });
               worker.postMessage({ type: "command", cmd: "isready" });
             }
             return;
           }
 
-          // Collect info lines during analysis
           if (line.startsWith("info") && line.includes(" pv ")) {
             uciLinesRef.current.push(line);
-
-            // Update depth display
             const depthMatch = line.match(/depth (\d+)/);
             if (depthMatch) {
               const d = parseInt(depthMatch[1]);
@@ -200,7 +179,6 @@ export default function Home() {
             }
           }
 
-          // Analysis complete
           if (line.startsWith("bestmove")) {
             const parsed = aggregateMultiPv(uciLinesRef.current);
             const chess = new Chess(fen);
@@ -258,14 +236,10 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---------------------------------------------------------------------------
-  // Analyze with real Stockfish or fallback
-  // ---------------------------------------------------------------------------
   const runStockfishAnalysis = useCallback(
     (position: string): Promise<AnalysisResult> => {
       return new Promise((resolve) => {
         if (engineStatus !== "ready" || !workerRef.current) {
-          // Fallback to heuristic
           resolve(heuristicAnalysis(position));
           return;
         }
@@ -278,11 +252,9 @@ export default function Home() {
         workerRef.current.postMessage({ type: "command", cmd: `position fen ${position}` });
         workerRef.current.postMessage({ type: "command", cmd: "go depth 18" });
 
-        // Safety timeout: if engine hangs, fall back to heuristic
         setTimeout(() => {
           if (resolveAnalysisRef.current) {
             workerRef.current?.postMessage({ type: "command", cmd: "stop" });
-            // Give it 500ms to respond with bestmove after stop
             setTimeout(() => {
               if (resolveAnalysisRef.current) {
                 resolveAnalysisRef.current(heuristicAnalysis(position));
@@ -319,7 +291,6 @@ export default function Home() {
     }
   }, [fen, userRating, runStockfishAnalysis]);
 
-  // Build arrows for the board
   const arrows = useMemo<BoardArrow[]>(() => {
     const result: BoardArrow[] = [];
     if (!growthRec) return result;
@@ -356,11 +327,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Gradient top bar */}
       <div className="h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        {/* Header */}
         <header className="mb-6">
           <div className="flex items-center justify-between">
             <div>
@@ -397,16 +366,13 @@ export default function Home() {
           </div>
         </header>
 
-        {/* How-to Guide */}
         {showGuide && !analysisResult && (
           <div className="mb-6">
             <HowToGuide onDismiss={() => setShowGuide(false)} />
           </div>
         )}
 
-        {/* Main Layout */}
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left: Board + Controls */}
           <div className="flex flex-col gap-4 lg:w-[520px] flex-shrink-0">
             <ChessBoard
               fen={fen}
@@ -416,7 +382,6 @@ export default function Home() {
             />
 
             <FenInput fen={fen} onFenChange={(newFen) => { setFen(newFen); clearAnalysis(); }} />
-
             <RatingSelector rating={userRating} onChange={setUserRating} />
 
             <button
@@ -438,7 +403,6 @@ export default function Home() {
               )}
             </button>
 
-            {/* Engine info below button */}
             {analysisResult && (
               <div className="rounded-xl border border-gray-800/50 bg-gray-900/30 p-3">
                 <EngineLines result={analysisResult} isAnalyzing={isAnalyzing} />
@@ -446,21 +410,17 @@ export default function Home() {
             )}
           </div>
 
-          {/* Right: Analysis Results */}
           <div className="flex-1 flex flex-col gap-4 min-w-0">
-            {/* Growth Move Card */}
             {growthRec && (
               <GrowthCard recommendation={growthRec} userRating={userRating} />
             )}
 
-            {/* Rating Comparison */}
             {ratingComps.length > 0 && (
               <div className="rounded-xl border border-gray-800/50 bg-gray-900/30 p-4">
                 <RatingComparison comparisons={ratingComps} userRating={userRating} />
               </div>
             )}
 
-            {/* Arrow Legend */}
             {growthRec && !growthRec.isUserMoveOptimal && (
               <div className="flex items-center gap-4 text-[11px] text-gray-500 px-1">
                 <span className="flex items-center gap-1.5">
@@ -474,7 +434,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Empty state when no analysis */}
             {!analysisResult && !isAnalyzing && !showGuide && (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="text-6xl mb-4 opacity-20">&#9816;</div>
@@ -491,7 +450,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="mt-12 pt-4 border-t border-gray-800/50 flex items-center justify-between text-[10px] text-gray-700">
           <span>
             Chess Coach | Move suggestions calibrated to your level. Inspired by{" "}

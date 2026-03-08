@@ -1,24 +1,8 @@
-/**
- * The Growth Engine - Core Innovation
- *
- * Instead of showing the engine-best move (incomprehensible),
- * finds the move that's ~30% better than what you'd play.
- * A move you can understand and learn from.
- *
- * Algorithm:
- * 1. Engine evaluates position → top N moves with centipawn scores
- * 2. For each rating band, compute move probability distribution
- * 3. Find what user would likely play (highest probability at their rating)
- * 4. Find what someone ~200 ELO higher would play (growth target)
- * 5. Suggest the growth move with explanation at user's level
- */
-
 import type {
   ScoredMove,
   FenString,
   RatingBandResult,
   GrowthRecommendation,
-  MoveCategory,
 } from "../lib/types";
 import { DISPLAY_RATING_BANDS, GROWTH_FACTOR } from "../lib/constants";
 import { getProfileForRating, getThinkingForRating } from "./rating-profiles";
@@ -26,9 +10,6 @@ import { rankMovesForRating } from "./move-probability";
 import { classifyMove } from "./complexity-classifier";
 import { generateExplanation, generateWhyBetter, deriveConcept } from "../lib/explanations";
 
-/**
- * Analyze how each rating band would play in this position.
- */
 export function analyzeAllRatings(
   moves: ScoredMove[],
   fen: FenString,
@@ -48,12 +29,6 @@ export function analyzeAllRatings(
   });
 }
 
-/**
- * Find the growth move for a specific user rating.
- *
- * The 30% rule: suggests a move that captures ~30% of the gap
- * between user's likely move and engine best.
- */
 export function findGrowthRecommendation(
   moves: ScoredMove[],
   fen: FenString,
@@ -70,10 +45,9 @@ export function findGrowthRecommendation(
   const userTop = userRanked[0];
   const targetTop = targetRanked[0];
 
-  // Find the actual growth move
   let growthMoveProb = targetTop;
 
-  // If target would play the same move, try 400 ELO higher
+  // if target plays the same move, look further up
   if (targetTop.uci === userTop.uci) {
     const higherProfile = getProfileForRating(Math.min(2000, userRating + 400));
     const higherRanked = rankMovesForRating(moves, fen, higherProfile);

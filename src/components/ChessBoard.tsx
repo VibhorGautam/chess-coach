@@ -45,15 +45,13 @@ export default function ChessBoard({
           return true;
         }
       } catch {
-        // invalid move
+        // illegal
       }
       return false;
     },
     [fen, onFenChange]
   );
 
-  // react-chessboard expects Arrow = [Square, Square, string?]
-  // We cast since our squares are valid chess squares
   const customArrows = arrows.map((a) => [
     a.from,
     a.to,
@@ -117,7 +115,7 @@ export default function ChessBoard({
               g.undo();
               onFenChange(g.fen());
             } catch {
-              // can't undo
+              // nothing to undo
             }
           }}
           className="px-3 py-1.5 text-xs rounded bg-gray-700 hover:bg-gray-600 transition-colors"

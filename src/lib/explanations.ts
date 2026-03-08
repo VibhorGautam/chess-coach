@@ -1,16 +1,8 @@
-/**
- * Human-readable move explanations calibrated to player level.
- *
- * Key principle: use vocabulary and concepts the player already understands.
- * Don't tell a 500-rated player about "prophylaxis" - tell them "this stops their attack."
- */
-
 import type { MoveCategory, ExplanationTier } from "./types";
 import { TacticalMotif, PositionalMotif, StrategicMotif } from "./types";
 
-/**
- * Generate a human-readable explanation for a move.
- */
+type ExplanationGen = (san: string, primary: MoveCategory, all: MoveCategory[]) => string;
+
 export function generateExplanation(
   san: string,
   categories: MoveCategory[],
@@ -19,11 +11,8 @@ export function generateExplanation(
   const primary = categories[0];
   if (!primary) return `${san} is a solid move.`;
 
-  const gen = EXPLANATION_GENERATORS[tier];
-  return gen(san, primary, categories);
+  return EXPLANATION_GENERATORS[tier](san, primary, categories);
 }
-
-type ExplanationGen = (san: string, primary: MoveCategory, all: MoveCategory[]) => string;
 
 const EXPLANATION_GENERATORS: Record<ExplanationTier, ExplanationGen> = {
   beginner: (san, primary) => {
@@ -94,9 +83,6 @@ const EXPLANATION_GENERATORS: Record<ExplanationTier, ExplanationGen> = {
   },
 };
 
-/**
- * Explain why the growth move is better than the user's likely move.
- */
 export function generateWhyBetter(
   userSan: string,
   growthSan: string,
@@ -117,16 +103,12 @@ export function generateWhyBetter(
     return `${growthSan} is more accurate than ${userSan}. The difference: it also addresses your opponent's plans.`;
   }
 
-  // advanced
   if (cpDiff > 50) {
     return `While ${userSan} is reasonable, ${growthSan} is more precise. It maintains the initiative with optimal piece coordination.`;
   }
   return `${growthSan} over ${userSan}: a small but meaningful improvement in positional accuracy.`;
 }
 
-/**
- * Derive what chess concept the growth move teaches.
- */
 export function deriveConcept(
   categories: MoveCategory[],
   tier: ExplanationTier,
@@ -170,7 +152,6 @@ export function deriveConcept(
     return concepts[primary]![tier]!;
   }
 
-  // Fallback
   const fallbacks: Record<ExplanationTier, string> = {
     beginner: "Every move should make your position a little better.",
     intermediate: "Small, purposeful improvements compound into winning advantages.",

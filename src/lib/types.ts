@@ -1,11 +1,3 @@
-/**
- * Chess Move Coach - Unified Type Definitions
- */
-
-// ---------------------------------------------------------------------------
-// Chess Primitives
-// ---------------------------------------------------------------------------
-
 export type UciMove = string;
 export type SanMove = string;
 export type FenString = string;
@@ -15,10 +7,6 @@ export type Square = string;
 
 export type Rating = 500 | 1000 | 1500 | 2000;
 export const RATINGS: Rating[] = [500, 1000, 1500, 2000];
-
-// ---------------------------------------------------------------------------
-// Engine Types
-// ---------------------------------------------------------------------------
 
 export interface AnalysisOptions {
   depth: number;
@@ -43,10 +31,6 @@ export interface AnalysisResult {
   elapsedMs: number;
 }
 
-// ---------------------------------------------------------------------------
-// UCI Parser Types
-// ---------------------------------------------------------------------------
-
 export interface UciInfoLine {
   depth: number;
   multipv: number;
@@ -63,10 +47,6 @@ export interface UciBestMove {
   ponder?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Worker Message Types
-// ---------------------------------------------------------------------------
-
 export type WorkerCommand =
   | { type: "init" }
   | { type: "command"; cmd: string }
@@ -76,10 +56,6 @@ export type WorkerResponse =
   | { type: "ready" }
   | { type: "uci-output"; line: string }
   | { type: "error"; message: string };
-
-// ---------------------------------------------------------------------------
-// Rating Model Types
-// ---------------------------------------------------------------------------
 
 export interface RatingProfile {
   rating: number;
@@ -106,10 +82,6 @@ export interface RatingBandResult {
   topMove: MoveProbability;
   thought: string;
 }
-
-// ---------------------------------------------------------------------------
-// Move Classification Types
-// ---------------------------------------------------------------------------
 
 export enum TacticalMotif {
   Capture = "capture",
@@ -147,36 +119,19 @@ export interface ClassifiedMove {
   complexityScore: number;
 }
 
-// ---------------------------------------------------------------------------
-// Growth Recommendation Types
-// ---------------------------------------------------------------------------
-
 export interface GrowthRecommendation {
-  /** The move we're suggesting */
   move: ScoredMove;
   moveCategories: MoveCategory[];
-  /** What the user would likely play */
   userTopMove: ScoredMove;
   userMoveCategories: MoveCategory[];
-  /** Rating of the target level */
   targetRating: number;
-  /** Human-readable explanation */
   explanation: string;
-  /** Why this move is better than the user's move */
   whyBetter: string;
-  /** What concept this teaches */
   concept: string;
-  /** Cp improvement over user's likely move */
   cpImprovement: number;
-  /** Rating comparison across all bands */
   ratingComparison: RatingBandResult[];
-  /** Is the user already playing the best move? */
   isUserMoveOptimal: boolean;
 }
-
-// ---------------------------------------------------------------------------
-// UI State Types
-// ---------------------------------------------------------------------------
 
 export interface AppState {
   fen: FenString;
@@ -193,10 +148,6 @@ export interface BoardArrow {
   to: Square;
   color: string;
 }
-
-// ---------------------------------------------------------------------------
-// Explanation Types
-// ---------------------------------------------------------------------------
 
 export type ExplanationTier = "beginner" | "intermediate" | "advanced";
 

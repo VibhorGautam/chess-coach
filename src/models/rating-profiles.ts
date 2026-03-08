@@ -1,10 +1,3 @@
-/**
- * Rating band profiles and interpolation.
- *
- * Each profile models a player's statistical behavior when choosing moves.
- * Based on MAIA Chess research principles and chess pedagogy.
- */
-
 import type { RatingProfile } from "../lib/types";
 
 export const RATING_BAND_PROFILES: RatingProfile[] = [
@@ -80,14 +73,9 @@ export const RATING_BAND_PROFILES: RatingProfile[] = [
   },
 ];
 
-/**
- * Interpolate a rating profile for any rating between 500-2000.
- * Linearly interpolates between the two nearest defined profiles.
- */
 export function getProfileForRating(rating: number): RatingProfile {
   const clamped = Math.max(500, Math.min(2000, rating));
 
-  // Find surrounding profiles
   let lower = RATING_BAND_PROFILES[0];
   let upper = RATING_BAND_PROFILES[RATING_BAND_PROFILES.length - 1];
 
@@ -118,7 +106,6 @@ export function getProfileForRating(rating: number): RatingProfile {
   };
 }
 
-/** Thought bubbles for each rating band: what the player is thinking */
 export const THINKING_PATTERNS: Record<number, string[]> = {
   500: [
     '"Ooh, I can take that piece!"',
